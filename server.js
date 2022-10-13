@@ -3,12 +3,10 @@ var HTTP_PORT = process.env.PORT || 8080;
 var express = require("express");
 var app = express();
 var path = require('path');
-var linkToDataService = require(__dirname + "/data-service.js");
+var linkToDataService__ = require(__dirname + "/data-service.js");
 app.use(express.static('public'));
 
-app.use((req, res) => {
-    res.status(404).end('404 PAGE NOT FOUND');
-});
+
 onHttpStart = () => {
     console.log('Express http server listening on port ' + HTTP_PORT);
 }
@@ -25,33 +23,35 @@ app.get('/about', (req, res) => {
 });
 //managers
 app.get("/managers", (req, res) => {
-    linkToDataService.getManagers().then((data) => {
+    linkToDataService__.getManagers().then((data) => {
         res.json({data});
-    }).catch((err) => {
-        res.json({err});
+    }).catch((error) => {
+        res.json({error});
     })
 });
 //employees
 app.get("/employees", (req, res) => {
-    linkToDataService.getAllEmployees().then((data) => {
+    linkToDataService__.getAllEmployees().then((data) => {
         res.json({data});
-    }).catch((err) => {
-        res.json({err});
+    }).catch((error) => {
+        res.json({error});
     })
 });
 //departments
 app.get("/departments", (req, res) => {
-    linkToDataService.getDepartments().then((data) => {
+    linkToDataService__.getDepartments().then((data) => {
         res.json({data});
-    }).catch((err) => {
-        res.json({ err});
+    }).catch((error) => {
+        res.json({ error});
     })
 });
-//no route provided
 
-
-linkToDataService.initialize().then(() => {
+linkToDataService__.initialize().then(() => {
     app.listen(HTTP_PORT, onHttpStart());
 }).catch (() => {
     console.log('Assignment Not Complete');
+});
+//app.listen(HTTP_PORT, onHttpStart());
+app.use((req, res) => {
+    res.status(404).end('404 PAGE NOT FOUND');
 });
