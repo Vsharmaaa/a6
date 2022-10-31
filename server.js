@@ -7,8 +7,7 @@
 * Name: Vishesh Sharma Student ID: 117431213 Date: 30/10/22
 *
 * Online (Cyclic) URL:
-* https://ruby-friendly-marlin.cyclic.app
-*
+* https://mysterious-reef-29940.herokuapp.com/
 ********************************************************************************/ 
 var HTTP_PORT = process.env.PORT || 8080;
 var express = require("express");
