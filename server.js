@@ -1,10 +1,10 @@
 /*********************************************************************************
-* BTI325 – Assignment 2
+* BTI325 – Assignment 3
 * I declare that this assignment is my own work in accordance with Seneca Academic Policy.
 * No part of this assignment has been copied manually or electronically from any other source
 * (including web sites) or distributed to other students.
 *
-* Name: Vishesh Sharma Student ID: 117431213 Date: 14/09/22
+* Name: Vishesh Sharma Student ID: 117431213 Date: 30/10/22
 *
 * Online (Cyclic) URL:
 * https://ruby-friendly-marlin.cyclic.app
@@ -52,7 +52,7 @@ app.get('/about', (req, res) => {
 //managers
 app.get("/managers", (req, res) => {
     linkToDataService__.getManagers().then((data) => {
-        res.json({data});
+        res.send(JSON.stringify(data));
     }).catch((error) => {
         res.json({error});
     })
@@ -63,7 +63,7 @@ if(req.query.status)
 {console.log(req.query.status);
    
     linkToDataService__.getEmployeesByStatus(req.query.status).then((stats)=>{
-        res.json({stats});
+        res.send(JSON.stringify(stats));;
      
     }).catch((err)=>{
         res.json({err})
@@ -73,7 +73,7 @@ if(req.query.status)
 else if(req.query.department)
 {
     linkToDataService__.getEmployeesByDepartment(req.query.department).then((depts)=>{
-        res.json({depts});
+        res.send(JSON.stringify(depts));;
     
     }).catch((err)=>{
         res.json({err})
@@ -84,7 +84,7 @@ else if(req.query.department)
 else if(req.query.manager)
 {
     linkToDataService__.getEmployeesByManager(req.query.manager).then((mang)=>{
-        res.json({mang});
+        res.send(JSON.stringify(mang));;
     
     }).catch((err)=>{
         res.json({err})
@@ -94,7 +94,7 @@ else if(req.query.manager)
 else{
 
     linkToDataService__.getAllEmployees().then((data) => {
-        res.json({data});
+        res.send(JSON.stringify(data));;
     }).catch((error) => {
         res.json({error});
     })}

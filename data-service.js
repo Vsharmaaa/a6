@@ -60,18 +60,19 @@ exports.getDepartments = () => {
 };
 
 exports.addEmployee=(employeeData)=>{
-    if(employeeData.isManager==undefined)
-    {
-        employeeData.isManager=false;
-    }
-    else
-    {
-employeeData.isManager=true;
-    }
-    employeeData.employeeNum=employees.length +1;
-    employees.push(employeeData);
+  
     return new Promise ((resolve,reject) => {
-        
+        if(employeeData.isManager==undefined)
+        {
+            employeeData.isManager=false;
+        }
+        else
+        {
+    employeeData.isManager=true;
+        }
+        employeeData.employeeNum=employees.length +1;
+        employees.push(employeeData);
+       
        if (employeeData.length == 0) 
             reject('no results returned');
        
