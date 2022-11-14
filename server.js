@@ -1,14 +1,15 @@
-/*********************************************************************************
-* BTI325 – Assignment 3
+/*************************************************************************
+* BTI325– Assignment 4
 * I declare that this assignment is my own work in accordance with Seneca Academic Policy.
-* No part of this assignment has been copied manually or electronically from any other source
-* (including web sites) or distributed to other students.
+No part of this assignment has been copied manually or electronically from any other source.
+* (including 3rd party web sites) or distributed to other students.
 *
-* Name: Vishesh Sharma Student ID: 117431213 Date: 30/10/22
+* Name:Vishesh Sharma Student ID: 117431213 Date: 11/11/2022
 *
-* Online (Cyclic) URL:
+* Your app’s URL (from Cyclic Heroku) that I can click to see your application:
 * https://mysterious-reef-29940.herokuapp.com/
-********************************************************************************/ 
+*
+*************************************************************************/
 var HTTP_PORT = process.env.PORT || 8080;
 var express = require("express");
 var app = express();
@@ -78,7 +79,7 @@ app.get('/about', (req, res) => {
 //managers
 app.get("/managers", (req, res) => {
     linkToDataService__.getManagers().then((data) => {
-        res.send(JSON.stringify(data));
+        res.render("data");
     }).catch((error) => {
         res.json({error});
     })
@@ -86,23 +87,23 @@ app.get("/managers", (req, res) => {
 //employees
 app.get("/employees", (req, res) => {
 if(req.query.status)
-{console.log(req.query.status);
+{
    
     linkToDataService__.getEmployeesByStatus(req.query.status).then((stats)=>{
-        res.send(JSON.stringify(stats));;
+        res.render("employees",{employees: stats});
      
     }).catch((err)=>{
-        res.json({err})
+        res.render({message: "no results"});
        
     })
 }
 else if(req.query.department)
 {
     linkToDataService__.getEmployeesByDepartment(req.query.department).then((depts)=>{
-        res.send(JSON.stringify(depts));;
+        res.render("employees",{employees: depts});
     
     }).catch((err)=>{
-        res.json({err})
+        res.render({message: "no results"});
     })
 
 
@@ -110,17 +111,17 @@ else if(req.query.department)
 else if(req.query.manager)
 {
     linkToDataService__.getEmployeesByManager(req.query.manager).then((mang)=>{
-        res.send(JSON.stringify(mang));;
+        res.render("employees",{employees: mang});
     
     }).catch((err)=>{
-        res.json({err})
+        res.render({message: "no results"});
     })
 
 }
 else{
 
     linkToDataService__.getAllEmployees().then((data) => {
- res.render("employees",{"employees": data, title: "Employees"});
+ res.render("employees",{"employees": data});
     }).catch((error) => {
         res.render({message: "no results"});
     })}
@@ -128,8 +129,7 @@ else{
 //departments
 app.get("/departments", (req, res) => {
     linkToDataService__.getDepartments().then((data) => {
-        res.render("departments", {departments:
-            data});
+        res.render("departments",{"departments": data});
             
     }).catch((error) => {
         res.render({message: "no results"});

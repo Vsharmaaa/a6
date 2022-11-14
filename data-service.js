@@ -90,7 +90,7 @@ exports.updateEmployee=(employeeData)=>
        
        // console.log(employeeData.hireDate);
         employees[i]=employeeData;
-        employees[i].hireDate=employeeData.hireDate;
+       // employees[i].hireDate=employeeData.hireDate;
 
         
         resolve();
