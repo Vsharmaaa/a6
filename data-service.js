@@ -80,6 +80,24 @@ exports.addEmployee=(employeeData)=>{
     })
 
 };
+exports.updateEmployee=(employeeData)=>
+{ 
+    return new Promise ((resolve,reject) => {
+        for(var i=0;i<employees.length;i++)
+       
+    if(employees[i].employeeNum==employeeData.employeeNum)
+    {
+       
+       // console.log(employeeData.hireDate);
+        employees[i]=employeeData;
+        employees[i].hireDate=employeeData.hireDate;
+
+        
+        resolve();
+    }
+})
+  
+}
 exports.getEmployeesByStatus=(status)=>
 {
 
@@ -98,6 +116,7 @@ exports.getEmployeesByStatus=(status)=>
             resolve(stats);
     })
 }
+
 exports.getEmployeesByDepartment=(department)=>
 {
     return new Promise ((resolve,reject) => {

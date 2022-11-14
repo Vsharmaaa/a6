@@ -17,6 +17,28 @@ var linkToDataService__ = require(__dirname + "/data-service.js");
 app.use(express.static('public'));
 const fs = require('fs');  
 const multer = require("multer");
+const exphbs = require("express-handlebars");
+
+app.engine(".hbs", exphbs.engine({
+    extname: ".hbs",
+    
+    defaultLayout: "main",
+   helpers: {navLink : function(url, options)
+    {
+        return '<li' +
+        ((url == app.locals.activeRoute) ? ' class="active" ' : '') +'><a href=" ' + url + ' ">' + options.fn(this) + '</a></li>';
+       } ,
+    equal: function (lvalue, rvalue, options) {
+        if (arguments.length < 3)
+        throw new Error("Handlebars Helper equal needs 2 parameters");
+        if (lvalue != rvalue) {
+        return options.inverse(this);
+        } else {
+        return options.fn(this);
+        }
+       } }})
+    );
+app.set("view engine", ".hbs");
 
 const storage = multer.diskStorage({
     destination: "./public/images/uploaded",
@@ -28,7 +50,7 @@ const storage = multer.diskStorage({
   
   // tell multer to use the diskStorage function for naming files instead of the default.
   const upload = multer({ storage: storage });
-
+ 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
@@ -36,17 +58,22 @@ onHttpStart = () => {
     console.log('Express http server listening on port ' + HTTP_PORT);
     
 }
-
+app.use(function(req,res,next){
+    let route = req.baseUrl + req.path;
+    app.locals.activeRoute = (route == "/") ? "/" : route.replace(/\/$/, "");
+    next();
+   });
+   
 //home
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname + "/views/home.html"));
+    res.render("home");
 });
 
 
 
 //about
 app.get('/about', (req, res) => {
-    res.sendFile(path.join(__dirname + "/views/about.html"));
+    res.render("about")
 });
 //managers
 app.get("/managers", (req, res) => {
@@ -66,7 +93,7 @@ if(req.query.status)
      
     }).catch((err)=>{
         res.json({err})
-        console.log("jo");
+       
     })
 }
 else if(req.query.department)
@@ -93,32 +120,34 @@ else if(req.query.manager)
 else{
 
     linkToDataService__.getAllEmployees().then((data) => {
-        res.send(JSON.stringify(data));;
+ res.render("employees",{"employees": data, title: "Employees"});
     }).catch((error) => {
-        res.json({error});
+        res.render({message: "no results"});
     })}
 });
 //departments
 app.get("/departments", (req, res) => {
     linkToDataService__.getDepartments().then((data) => {
-        res.send(JSON.stringify(data));
+        res.render("departments", {departments:
+            data});
+            
     }).catch((error) => {
-        res.json({ error});
+        res.render({message: "no results"});
     })
 });
 
 app.get("/employee/:value",(req,res)=>{
     linkToDataService__.getEmployeeByNum(req.params.value).then((data) => {
-        res.send(JSON.stringify(data));;
+        res.render("employee", { employee: data })
     }).catch((error) => {
-        res.json({error});
+       res.render("employee",{message:"no results"})
     })
 
 });
 
 app.get("/employees/add",(req,res)=>
 {
-    res.sendFile(path.join(__dirname + "/views/addEmployee.html"));
+    res.render("addEmployee")
 })
 
 app.post('/employees/add', (req,res) => {
@@ -130,18 +159,33 @@ app.post('/employees/add', (req,res) => {
 });
 app.get("/images/add",(req,res)=>
 {
-    res.sendFile(path.join(__dirname + "/views/addImage.html"));
+    res.render("addImage");
 })
 app.post("/images/add", upload.single("imageFile"), (req, res) => {
     res.redirect("/images")
   });
   app.get("/images", (req,res) => {
     fs.readdir("./public/images/uploaded", function(err,items) {
-        res.json(items);
+        if(err)
+        {
+         
+            console.log(err);
+        }
+      
+        res.render("images", {
+            "images": items,
+            layout: false // do not use the default Layout (main.hbs)
+          });
     })
 });
 
 
+   app.post("/employee/update", (req, res) => {
+     linkToDataService__.updateEmployee(req.body).then(() => {
+    res.redirect("/employees");
+}).catch((error)=>{
+    console.log('Assignment Not Complete');
+})});  
 linkToDataService__.initialize().then(() => {
     app.listen(HTTP_PORT, onHttpStart());
     
