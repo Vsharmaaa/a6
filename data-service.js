@@ -88,9 +88,9 @@ exports.updateEmployee=(employeeData)=>
     if(employees[i].employeeNum==employeeData.employeeNum)
     {
        
-       // console.log(employeeData.hireDate);
+       // console.log(employeeData.hireDate);for debug
         employees[i]=employeeData;
-       // employees[i].hireDate=employeeData.hireDate;
+       // employees[i].hireDate=employeeData.hireDate;//solved in debug not necessary
 
         
         resolve();

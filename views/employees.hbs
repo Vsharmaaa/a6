@@ -23,7 +23,8 @@
         
         <td><a href= "/employee/{{employeeNum}}">{{firstName}} &nbsp;{{lastName}}</a></td>
         
-        <td><a href="mailto:{{email}}">{{email}}</a></td>
+        <td><a href="mailto:{{email}}">{{email}}</a></td><!-- directly mails -->
+
         <td>{{addressStreet}},
 
       {{addressState}},
@@ -31,6 +32,8 @@
       <td><a href="/employees?manager={{employeeManagerNum}}">{{employeeManagerNum}}</a></td>
         <td><a href="/employees?status={{status}}">{{status}}</a></td>
         <td><a href="/employees?department={{department}}">{{department}}</a></td>
+        <!-- these 3 are query redirections -->
+
         <td>{{hireDate}}</td>
 {{else}}
      
@@ -42,3 +45,4 @@
  </div>
 </div>
 
+<!-- Dont forget the /each to end the iteration -->

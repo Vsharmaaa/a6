@@ -1,6 +1,7 @@
 <div class="row">
  <div class="col-md-12">
- <h2>{{employee.firstName}} {{ employee.lastName}} - Employee: {{ employee.employeeNum}}</h2>
+ <h2>{{employee.firstName}} {{ employee.lastName}} - Employee: {{ employee.employeeNum}}</h2><!-- This was important for object to get correct data in other modules which displayed the table information after update employee  -->
+
  <hr />
  <form method="post" action="/employee/update">
  <fieldset>
