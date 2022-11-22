@@ -67,7 +67,7 @@ app.use(function(req,res,next){
    
 //home
 app.get('/', (req, res) => {
-    res.render("home");
+    res.render("views/layouts/home");
 });
 
 
