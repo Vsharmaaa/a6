@@ -24,6 +24,10 @@ app.engine(".hbs", exphbs.engine({
     extname: ".hbs",
     
     defaultLayout: "main",
+    runtimeOptions:{
+allowProtoPropertiesByDefault:true,
+allowedProtoMethodsByDefault:true,
+    },
    helpers: {navLink : function(url, options)
     {
         return '<li' +
@@ -67,7 +71,7 @@ app.use(function(req,res,next){
    
 //home
 app.get('/', (req, res) => {
-    res.render("views/layouts/home");
+    res.render("home");
 });
 
 
@@ -90,6 +94,7 @@ if(req.query.status)
 {
    
     linkToDataService__.getEmployeesByStatus(req.query.status).then((stats)=>{
+       
         res.render("employees",{employees: stats});
      
     }).catch((err)=>{
@@ -136,6 +141,27 @@ app.get("/departments", (req, res) => {
     })
 });
 
+app.get("/departments/add", (req,res) => {
+    res.render(path.join(__dirname + "/views/addDepartment.hbs"));
+});
+
+app.post("/departments/add", (req,res) => {
+   linkToDataService__.addDepartment(req.body).then(() => {
+        res.redirect("/departments");
+    })
+});
+
+app.post("/department/update", (req,res) => {
+    linkToDataService__.updateDepartment(req.body).then(() => {
+        res.redirect("/departments");
+    })
+});
+app.get("/department/:departmentId", (req, res) =>{
+    linkToDataService__.getDepartmentById(req.params.departmentId)
+    .then((data) => {res.render("department", { department: data })})
+    .catch((err) => res.status(500).send("department not found"))
+});
+
 app.get("/employee/:value",(req,res)=>{
     linkToDataService__.getEmployeeByNum(req.params.value).then((data) => {
         res.render("employee", { employee: data })
@@ -145,10 +171,45 @@ app.get("/employee/:value",(req,res)=>{
 
 });
 
-app.get("/employees/add",(req,res)=>
-{
-    res.render("addEmployee")
-})
+app.get('/employees/add',(req,res) => {
+   linkToDataService__.getDepartments()
+    .then(data => res.render("addEmployee", {departments: data}))
+    .catch(err => res.render("addEmployee", {departments: []}));
+});
+app.get("/employee/:empNum", (req, res) => {
+    // initialize an empty object to store the values
+    let viewData = {};
+    linkToDataService__.getEmployeeByNum(req.params.empNum).then((data) => {
+    if (data) {
+    viewData.employee = data; //store employee data in the "viewData" object as "employee"
+    } else {
+    viewData.employee = null; // set employee to null if none were returned
+    }
+    }).catch(() => {
+    viewData.employee = null; // set employee to null if there was an error
+    }).then(linkToDataService__.getDepartments)
+    .then((data) => {
+    viewData.departments = data; // store department data in the "viewData" object as"departments"
+    // loop through viewData.departments and once we have found the departmentId that matches
+    // the employee's "department" value, add a "selected" property to the matching
+    // viewData.departments object
+   
+    for (let i = 0; i < viewData.departments.length; i++) {
+    if (viewData.departments[i].departmentId == viewData.employee.department) {
+    viewData.departments[i].selected = true;
+    }
+    }
+    }).catch(() => {
+    viewData.departments = []; // set departments to empty if there was an error
+    }).then(() => {
+    if (viewData.employee == null) { // if no employee - return an error
+    res.status(404).send("Employee Not Found");
+    } else {
+    res.render("employee", { viewData: viewData }); // render the "employee" view
+    }
+    });
+   });
+   
 
 app.post('/employees/add', (req,res) => {
     linkToDataService__.addEmployee(req.body).then(() => {
@@ -173,24 +234,37 @@ app.post("/images/add", upload.single("imageFile"), (req, res) => {
         }
       
         res.render("images", {
-            "images": items,
-            layout: false // do not use the default Layout (main.hbs)
+            "images": items
+            //layout: false // do not use the default Layout (main.hbs)
           });
     })
 });
 
+app.get('/employees/delete/:value', (req,res) => {
+    linkToDataService__.deleteEmployeeByNum(req.params.value)
+    .then(res.redirect("/employees"))
+    .catch((err) => res.status(500).send("Employee not found"))
+});
+app.get('/departments/delete/:value', (req,res) => {
+    linkToDataService__.deleteDepartmentByNum(req.params.value)
+    .then(res.redirect("/departments"))
+    .catch((err) => res.status(500).send("Department not found"))
+});
 
    app.post("/employee/update", (req, res) => {
      linkToDataService__.updateEmployee(req.body).then(() => {
     res.redirect("/employees");
 }).catch((error)=>{
-    console.log('Assignment Not Complete');
-})});  
+    console.log('As Not Complete');
+})}); 
+
+
+
 linkToDataService__.initialize().then(() => {
     app.listen(HTTP_PORT, onHttpStart());
     
 }).catch (() => {
-    console.log('Assignment Not Complete');
+    console.log('signment Not Complete');
 });
 app.use((req, res) => {
     res.status(404).end('404 PAGE NOT FOUND');
