@@ -116,25 +116,27 @@ exports.addEmployee=(employeeData)=>{
 
 })};
 exports.updateEmployee=(employeeData)=>
-{ 
-    employeeData.isManager = (employeeData.isManager) ? true : false;
+{           employeeData.isManager= employeeData.isManager?true:false;
+     for (var i in employeeData)
+    {
+        if (employeeData[i]=="")
+            employeeData[i]=null;
+    }
+  
+        return new Promise(function (resolve, reject) {
+
+            sequelize.sync().then(()=>{console.log("LO")
+              Employee.update(employeeData,
+                  {where: {employeeNum: employeeData.employeeNum}}
+              )}).then(()=>{
+                  resolve();
+              }).catch((err)=>{
+                  reject("unable to update employee");
+              });
+          });
+      
     
-    for (var i in employeeData) {
-        if (employeeData[i] == ""){
-            employeeData[i] = null;
-        }
-    return new Promise(function (resolve, reject) {
-        
-        Employee.update(employeeData,{where: {
-            employeeNum: employeeData.employeeNum}})
-        .then(resolve( Employee.update(employeeData,{where: {
-            employeeNum: employeeData.employeeNum}})))
-        .catch(() =>{
-            reject("unable to update employee");
-    });
 }
-    )
-}}
 exports.getEmployeesByStatus=(status)=>
 {
 

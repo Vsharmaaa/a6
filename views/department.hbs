@@ -2,6 +2,7 @@
     <div class="col-md-12">
      
         <h1>{{department.departmentName}} -Department: {{department.departmentId}}</h1>
+        <form method="POST" action="/department/update">
         <fieldset>
             <input type="hidden" name="departmentId" value="{{department.departmentId}}">
             <div class="row">
@@ -19,3 +20,4 @@
         </form> 
     </div>
 </div>
+

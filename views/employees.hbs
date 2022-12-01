@@ -1,41 +1,50 @@
 <div class="row">
-    <div class="col-md-12">
-        <h2>Employees<a href="/employees/add" class="btn btn-success pull-right">Add New Employee</a></h2>
-        <hr />
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Employee&nbsp;Num</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Address</th>
-                        <th>Manager&nbsp;ID</th>
-                        <th>Status</th>
-                        <th>Department</th>
-                        <th>Hired On</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each employees}}
-                    <tr>
-                        <td>{{employeeNum}}</td>
-                        <td><a href="/employee/{{employeeNum}}">{{firstName}} {{lastName}}</a></td>
-                        <td><a href="mailto:{{email}}">{{email}}</a></td>
-                        <td>{{this.addressStreet}} <br> {{addressCity}}, {{addressState}} <br>{{addressPostal}}</td>
-                        <td><a href="/employees?manager={{employeeManagerNum}}">{{employeeManagerNum}}</a></td>
-                        <td><a href="/employees?status={{status}}">{{status}}</a></td>
-                        <td><a href="/employees?department={{department}}">{{department}}</a></td>
-                        <td>{{this.hireDate}}</td>
-                        <td><a class="btn btn-danger" href="/employees/delete/{{employeeNum}}">remove</a></td>
-                    </tr>
-                    {{/each}}
-            </table>
-        </div>
-    </div>
-    {{#unless employees}}
-    <div class="col-md-12 text-center">
-        <strong>{{message}}</strong> 
-    </div>
-    {{/unless}}
+ <div class="col-md-12">
+ <h2>Employees<a href="/employees/add" class="btn btn-success pull-right">Add New Employee</a></h2>
+ <hr />
+
+
+ <div class="table-responsive">
+            <table class="table ">
+                 <tr>
+    <th>Employee Num</th>
+    <th>Full Name</th>
+    <th>Email</th>
+    <th>Address</th>
+    <th>Manager ID</th>
+    <th>Status</th>
+    <th>Department</th>
+    <th>Hired On</th>
+    </tr>
+    {{#each employees}}
+    <tr>
+
+        <td>{{employeeNum}}</td>
+        
+        <td><a href= "/employee/{{employeeNum}}">{{firstName}} &nbsp;{{last_name}}</a></td>
+        
+        <td><a href="mailto:{{email}}">{{email}}</a></td><!-- directly mails -->
+
+        <td>{{addressStreet}},{{addresCity}},
+
+      {{addressState}},
+      {{addressPostal}}</td>
+      <td><a href="/employees?manager={{employeeManagerNum}}">{{employeeManagerNum}}</a></td>
+        <td><a href="/employees?status={{status}}">{{status}}</a></td>
+        <td><a href="/employees?department={{department}}">{{department}}</a></td>
+        
+        <!-- these 3 are query redirections -->
+
+        <td>{{hireDate}}</td>
+        <td><a class="btn btn-danger" href="/employees/delete/{{employeeNum}}">remove</a></td>
+{{else}}
+     
+        <div class="col-md-12 text-center">
+ <strong>{{message}}</strong>
 </div>
+     </tr>
+     {{/each}}
+ </div>
+</div>
+
+<!-- Dont forget the /each to end the iteration -->

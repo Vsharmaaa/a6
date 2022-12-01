@@ -1,15 +1,16 @@
 /*************************************************************************
-* BTI325– Assignment 4
+* BTI325– Assignment 5
 * I declare that this assignment is my own work in accordance with Seneca Academic Policy.
 No part of this assignment has been copied manually or electronically from any other source.
 * (including 3rd party web sites) or distributed to other students.
 *
-* Name:Vishesh Sharma Student ID: 117431213 Date: 11/11/2022
+* Name:Vishesh Sharma Student ID: 117431213 Date: 29/11/2022
 *
-* Your app’s URL (from Cyclic Heroku) that I can click to see your application:
-* https://mysterious-reef-29940.herokuapp.com/
+* 
+* Online (Heroku Cyclic) Link: 
 *
-*************************************************************************/
+********************************************************************************/
+ 
 var HTTP_PORT = process.env.PORT || 8080;
 var express = require("express");
 var app = express();
@@ -162,14 +163,7 @@ app.get("/department/:departmentId", (req, res) =>{
     .catch((err) => res.status(500).send("department not found"))
 });
 
-app.get("/employee/:value",(req,res)=>{
-    linkToDataService__.getEmployeeByNum(req.params.value).then((data) => {
-        res.render("employee", { employee: data })
-    }).catch((error) => {
-       res.render("employee",{message:"no results"})
-    })
 
-});
 
 app.get('/employees/add',(req,res) => {
    linkToDataService__.getDepartments()
@@ -177,9 +171,10 @@ app.get('/employees/add',(req,res) => {
     .catch(err => res.render("addEmployee", {departments: []}));
 });
 app.get("/employee/:empNum", (req, res) => {
+   
     // initialize an empty object to store the values
     let viewData = {};
-    linkToDataService__.getEmployeeByNum(req.params.empNum).then((data) => {
+   linkToDataService__.getEmployeeByNum(req.params.empNum).then((data) => {
     if (data) {
     viewData.employee = data; //store employee data in the "viewData" object as "employee"
     } else {
@@ -189,7 +184,8 @@ app.get("/employee/:empNum", (req, res) => {
     viewData.employee = null; // set employee to null if there was an error
     }).then(linkToDataService__.getDepartments)
     .then((data) => {
-    viewData.departments = data; // store department data in the "viewData" object as"departments"
+    viewData.departments = data; // store department data in the "viewData" object as
+   "departments"
     // loop through viewData.departments and once we have found the departmentId that matches
     // the employee's "department" value, add a "selected" property to the matching
     // viewData.departments object
@@ -254,7 +250,7 @@ app.get('/departments/delete/:value', (req,res) => {
    app.post("/employee/update", (req, res) => {
      linkToDataService__.updateEmployee(req.body).then(() => {
     res.redirect("/employees");
-}).catch((error)=>{
+}).catch((error)=>{7
     console.log('As Not Complete');
 })}); 
 
