@@ -260,8 +260,8 @@ linkToDataService__.initialize().then(() => {
     app.listen(HTTP_PORT, onHttpStart());
     
 }).catch (() => {
-    console.log('signment Not Complete');
-});
+    console.log('zsignment Not Complete');
+}); 
 app.use((req, res) => {
     res.status(404).end('404 PAGE NOT FOUND');
 });

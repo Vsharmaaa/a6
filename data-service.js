@@ -3,11 +3,11 @@ var sequelize = new Sequelize('jasftmvb', 'jasftmvb', 'IRrpGRDE2wwfPNCWExI0rXFWu
  host: 'peanut.db.elephantsql.com',
  dialect: 'postgres',
  port: 5432,
- dialectOptions: {
+ dialectOptions: { 
  ssl: true
 },
 // update here. You need it.
-});
+}); 
 
 const Employee = sequelize.define('Employee',{
     employeeNum:{
