@@ -16,10 +16,12 @@ var express = require("express");
 var app = express();
 var path = require('path');
 var linkToDataService__ = require(__dirname + "/data-service.js");
+var auth=require(__dirname+"/data-service-auth.js");
 app.use(express.static('public'));
 const fs = require('fs');  
 const multer = require("multer");
 const exphbs = require("express-handlebars");
+const clientSessions = require("client-sessions");
 
 app.engine(".hbs", exphbs.engine({
     extname: ".hbs",
@@ -44,6 +46,24 @@ allowedProtoMethodsByDefault:true,
         }
        } }})
     );
+
+    app.use(clientSessions({
+        cookieName: "session", // this is the object name that will be added to 'req'
+        secret: "week10example_web322", // this should be a long un-guessable string.
+        duration: 2 * 60 * 1000, // duration of the session in milliseconds (2 minutes)
+        activeDuration: 1000 * 60 // the session will be extended by this many ms each request (1 minute)
+      }));
+      app.use((req,res,next) => {
+        res.locals.session = req.session;
+        next();
+    });
+    
+    ensureLogin = (req,res,next) => {
+        if (!(req.session.user)) {
+            res.redirect("/login");
+        }
+        else { next(); }
+    };
 app.set("view engine", ".hbs");
 
 const storage = multer.diskStorage({
@@ -64,11 +84,7 @@ onHttpStart = () => {
     console.log('Express http server listening on port ' + HTTP_PORT);
     
 }
-app.use(function(req,res,next){
-    let route = req.baseUrl + req.path;
-    app.locals.activeRoute = (route == "/") ? "/" : route.replace(/\/$/, "");
-    next();
-   });
+
    
 //home
 app.get('/', (req, res) => {
@@ -82,15 +98,9 @@ app.get('/about', (req, res) => {
     res.render("about")
 });
 //managers
-app.get("/managers", (req, res) => {
-    linkToDataService__.getManagers().then((data) => {
-        res.render("data");
-    }).catch((error) => {
-        res.json({error});
-    })
-});
+
 //employees
-app.get("/employees", (req, res) => {
+app.get("/employees",ensureLogin, (req, res) => {
 if(req.query.status)
 {
    
@@ -133,7 +143,7 @@ else{
     })}
 });
 //departments
-app.get("/departments", (req, res) => {
+app.get("/departments",ensureLogin, (req, res) => {
     linkToDataService__.getDepartments().then((data) => {
         res.render("departments",{"departments": data});
             
@@ -142,22 +152,22 @@ app.get("/departments", (req, res) => {
     })
 });
 
-app.get("/departments/add", (req,res) => {
+app.get("/departments/add",ensureLogin, (req,res) => {
     res.render(path.join(__dirname + "/views/addDepartment.hbs"));
 });
 
-app.post("/departments/add", (req,res) => {
+app.post("/departments/add",ensureLogin, (req,res) => {
    linkToDataService__.addDepartment(req.body).then(() => {
         res.redirect("/departments");
     })
 });
 
-app.post("/department/update", (req,res) => {
+app.post("/department/update",ensureLogin, (req,res) => {
     linkToDataService__.updateDepartment(req.body).then(() => {
         res.redirect("/departments");
     })
 });
-app.get("/department/:departmentId", (req, res) =>{
+app.get("/department/:departmentId",ensureLogin, (req, res) =>{
     linkToDataService__.getDepartmentById(req.params.departmentId)
     .then((data) => {res.render("department", { department: data })})
     .catch((err) => res.status(500).send("department not found"))
@@ -165,12 +175,12 @@ app.get("/department/:departmentId", (req, res) =>{
 
 
 
-app.get('/employees/add',(req,res) => {
+app.get('/employees/add',ensureLogin,(req,res) => {
    linkToDataService__.getDepartments()
     .then(data => res.render("addEmployee", {departments: data}))
     .catch(err => res.render("addEmployee", {departments: []}));
 });
-app.get("/employee/:empNum", (req, res) => {
+app.get("/employee/:empNum",ensureLogin, (req, res) => {
    
     // initialize an empty object to store the values
     let viewData = {};
@@ -207,21 +217,21 @@ app.get("/employee/:empNum", (req, res) => {
    });
    
 
-app.post('/employees/add', (req,res) => {
+app.post('/employees/add',ensureLogin, (req,res) => {
     linkToDataService__.addEmployee(req.body).then(() => {
         res.redirect("/employees");
     }).catch((error)=>{
         res.json({error});
     })
 });
-app.get("/images/add",(req,res)=>
+app.get("/images/add",ensureLogin,(req,res)=>
 {
     res.render("addImage");
 })
-app.post("/images/add", upload.single("imageFile"), (req, res) => {
+app.post("/images/add",ensureLogin, upload.single("imageFile"), (req, res) => {
     res.redirect("/images")
   });
-  app.get("/images", (req,res) => {
+  app.get("/images",ensureLogin, (req,res) => {
     fs.readdir("./public/images/uploaded", function(err,items) {
         if(err)
         {
@@ -236,32 +246,70 @@ app.post("/images/add", upload.single("imageFile"), (req, res) => {
     })
 });
 
-app.get('/employees/delete/:value', (req,res) => {
+app.get('/employees/delete/:value',ensureLogin, (req,res) => {
     linkToDataService__.deleteEmployeeByNum(req.params.value)
     .then(res.redirect("/employees"))
     .catch((err) => res.status(500).send("Employee not found"))
 });
-app.get('/departments/delete/:value', (req,res) => {
+app.get('/departments/delete/:value',ensureLogin, (req,res) => {
     linkToDataService__.deleteDepartmentByNum(req.params.value)
     .then(res.redirect("/departments"))
     .catch((err) => res.status(500).send("Department not found"))
 });
 
-   app.post("/employee/update", (req, res) => {
+   app.post("/employee/update",ensureLogin, (req, res) => {
      linkToDataService__.updateEmployee(req.body).then(() => {
     res.redirect("/employees");
 }).catch((error)=>{7
     console.log('As Not Complete');
 })}); 
 
+app.get("/login", (req,res) => {
+    res.render("login");
+});
 
+app.get("/register", (req,res) => {
+   
+    res.render("register");
+});
 
-linkToDataService__.initialize().then(() => {
-    app.listen(HTTP_PORT, onHttpStart());
-    
-}).catch (() => {
-    console.log('zsignment Not Complete');
-}); 
-app.use((req, res) => {
-    res.status(404).end('404 PAGE NOT FOUND');
+app.post("/register", (req,res) => {
+    auth.registerUser(req.body)
+    .then(() => res.render("register", {successMessage: "User created" } ))
+    .catch (err => res.render("register", {errorMessage: err, userName:req.body.userName }) )
+});
+
+app.post("/login", (req,res) => {
+    req.body.userAgent = req.get('User-Agent')
+auth.checkUser(req.body).then((user) => { 
+        req.session.user = { 
+            userName: user.userName,
+            email:    user.email,        
+            loginHistory: user.loginHistory        
+        } 
+     
+        res.redirect("/employees");
+    })
+    .catch(err => {
+        res.render("login", {errorMessage:err, userName:req.body.userName} )
+    }) 
+});
+
+app.get("/logout", (req,res) => {
+    req.session.reset();
+    res.redirect("/");
+});
+
+app.get("/userHistory", ensureLogin, (req,res) => {
+    res.render("userHistory", {user:req.session.user} );
+});
+
+linkToDataService__.initialize()
+.then(auth.initialize)
+.then(function(){
+ app.listen(HTTP_PORT, function(){
+ console.log("app listening on: " + HTTP_PORT)
+ });
+}).catch(function(err){
+ console.log("unable to start server: " + err);
 });

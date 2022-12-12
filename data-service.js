@@ -46,8 +46,7 @@ const Department = sequelize.define('Department',{
         updatedAt: false // disable updatedAt
 });
     
-sequelize.authenticate().then(() =>{ console.log('Connection success.')})
-.catch((err) =>{console.log('l', err)});
+
 module.exports.initialize = () => {
     return new Promise(function (resolve, reject) {
         sequelize.sync().then(function() {
@@ -126,7 +125,7 @@ exports.updateEmployee=(employeeData)=>
         return new Promise(function (resolve, reject) {
 
             sequelize.sync().then(()=>{console.log("LO")
-              Employee.update(employeeData,
+              Employee.updateOne(employeeData,
                   {where: {employeeNum: employeeData.employeeNum}}
               )}).then(()=>{
                   resolve();
@@ -219,7 +218,7 @@ exports.getEmployeeByNum=(num)=>{
            
     
             sequelize.sync()
-            .then(Department.update(departmentData, {where: { 
+            .then(Department.updateOne(departmentData, {where: { 
                 departmentId: departmentData.departmentId
             }}))
             .then(resolve(Department.update(departmentData, {where: { departmentId:departmentData.departmentId }
